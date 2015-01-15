@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
   # cloud file that is used
   environment = ENV['env'] || 'vagrant-vbox'
   layout = ENV['layout'] || 'full'
-  map = ENV['map'] || ENV['env']
+  map = ENV['map'] || 'vagrant-vbox'
 
   config.vm.provider :virtualbox do |vb, override|
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
