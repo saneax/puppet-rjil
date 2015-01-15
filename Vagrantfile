@@ -80,13 +80,13 @@ Vagrant.configure("2") do |config|
         'apt-get update; apt-get install -y git curl;'
       end
 
-      # upgrade puppet
+      # upgrade puppet and software-properties-common puppet-jiocloud jiocloud-ssl-certificate
       if ENV['http_proxy']
         config.vm.provision 'shell', :inline =>
-          "test -e puppet.deb && exit 0; release=$(lsb_release -cs);http_proxy=#{ENV['http_proxy']} wget -O puppet.deb http://apt.puppetlabs.com/puppetlabs-release-${release}.deb;dpkg -i puppet.deb;apt-get update;apt-get install -y puppet-common=3.6.2-1puppetlabs1"
+          "test -e puppet.deb && exit 0; release=$(lsb_release -cs);http_proxy=#{ENV['http_proxy']} wget -O puppet.deb http://apt.puppetlabs.com/puppetlabs-release-${release}.deb; wget -O jiocloud.deb http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-${release}-testing.deb; dpkg -i puppet.deb; dpkg -i jiocloud.deb; apt-get update;apt-get install -y puppet-common=3.6.2-1puppetlabs1 software-properties-common puppet-jiocloud jiocloud-ssl-certificate"
       else
         config.vm.provision 'shell', :inline =>
-          "test -e puppet.deb && exit 0; release=$(lsb_release -cs);wget -O puppet.deb http://apt.puppetlabs.com/puppetlabs-release-${release}.deb;dpkg -i puppet.deb;apt-get update;apt-get install -y puppet-common=3.6.2-1puppetlabs1"
+          "test -e puppet.deb && exit 0; release=$(lsb_release -cs);wget -O puppet.deb http://apt.puppetlabs.com/puppetlabs-release-${release}.deb;wget -O jiocloud.deb http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-${release}-testing.deb; dpkg -i puppet.deb; dpkg -i jiocloud.deb; apt-get update; apt-get install -y puppet-common=3.6.2-1puppetlabs1 software-properties-common puppet-jiocloud jiocloud-ssl-certificate"
       end
       config.vm.provision 'shell', :inline =>
         'puppet apply --detailed-exitcodes --debug -e "include rjil::jiocloud"; if [[ $? = 1 || $? = 4 || $? = 6 ]]; then apt-get update; puppet apply --detailed-exitcodes --debug -e "include rjil::jiocloud"; fi'
