@@ -52,6 +52,7 @@ class rjil::jiocloud (
     command => 'run-one /usr/local/bin/maybe-upgrade.sh 2>&1 | logger',
     user    => 'root',
     require => Package['run-one'],
+    ensure => present
   }
 
   ini_setting { 'templatedir':

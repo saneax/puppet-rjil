@@ -86,8 +86,6 @@ class rjil::cinder (
 
   include rjil::apache
 
-  Service['cinder-api'] -> Service['httpd']
-
   ##
   # Cinder module dont have bind port parameter, so adding here for now.
   ##
