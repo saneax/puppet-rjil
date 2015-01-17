@@ -8,7 +8,12 @@ up() {
 
 provision() {
   sleep 5
-  . newtokens.sh
+  if [ -z "$consul_discovery_token" ]
+  then
+	echo "We are going ahead and using the old token, if you *want to use new token* unset $consul_discovery_token"
+  else
+  	. newtokens.sh
+  fi
   if [ ! -n $consul_discovery_token ]; then
     echo "Error fetching consul discovery token, exiting"
     exit 100
