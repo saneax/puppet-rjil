@@ -9,6 +9,12 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export layout="${layout}"
 release="\$(lsb_release -cs)"
+consul_discovery_token=${consul_discovery_token:-"UNSET"}
+BUILD_NUMBER=${BUILD_NUMBER:-"UNSET"}
+env=${env:-"UNSET"}
+cloud_provider=${cloud_provider:-"UNSET"}
+apt_local_mirror=${apt_local_mirror:-"UNSET"}
+
 if [ -n "${git_protocol}" ]; then
   export git_protocol="${git_protocol}"
 fi
@@ -24,12 +30,22 @@ then
 	export https_proxy=${env_https_proxy}
 	echo https_proxy="'${env_https_proxy}'" >> /etc/environment
 fi
-wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-\${release}.deb
-if [ "${env}" == "at" ]
-then
-	jiocloud_repo_deb_url=http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-\${release}-testing.deb
+
+if [ -n "${apt_local_mirror}" ]; then
+  wget -O puppet.deb -t 5 -T 30 http://\${apt_local_mirror}/puppetlabs-release-\${release}.deb
+  if [ "${env}" == "at" ]; then
+    jiocloud_repo_deb_url=http://\${apt_local_mirror}/jiocloud-apt-\${release}-testing.deb
+  else
+    jiocloud_repo_deb_url=http://\${apt_local_mirror}/jiocloud-apt-\${release}.deb
+  fi
+  #we will add the source.list file here later
 else
-	jiocloud_repo_deb_url=http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-\${release}.deb
+  wget -O puppet.deb -t 5 -T 30 http://apt.puppetlabs.com/puppetlabs-release-\${release}.deb
+  if [ "${env}" == "at" ]; then
+	  jiocloud_repo_deb_url=http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-\${release}-testing.deb
+  else
+	  jiocloud_repo_deb_url=http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-\${release}.deb
+  fi
 fi
 wget -O jiocloud.deb -t 5 -T 30 \${jiocloud_repo_deb_url}
 dpkg -i puppet.deb jiocloud.deb
@@ -38,7 +54,13 @@ then
        dpkg -i internal.deb
 fi
 apt-get update
-apt-get install -y puppet software-properties-common puppet-jiocloud jiocloud-ssl-certificate
+
+if [ "${cloud_provider}" == "hp"]; then
+  apt-get install -y puppet=3.7.4-1puppetlabs1 software-properties-common puppet-jiocloud jiocloud-ssl-certificate
+else
+  apt-get install -y puppet=3.7.4-1puppetlabs1 software-properties-common jiocloud-ssl-certificate
+fi
+
 if [ -n "${python_jiocloud_source_repo}" ]; then
   apt-get install -y python-pip python-jiocloud python-dev libffi-dev libssl-dev git
   pip install -e "${python_jiocloud_source_repo}@${python_jiocloud_source_branch}#egg=jiocloud"
@@ -75,11 +97,15 @@ if [ -n "${puppet_modules_source_repo}" ]; then
 else
   puppet apply -e "ini_setting { default_manifest: path => \"/etc/puppet/puppet.conf\", section => main, setting => default_manifest, value => \"/etc/puppet/manifests/site.pp\" }"
 fi
+
+
 sudo mkdir -p /etc/facter/facts.d
 echo 'consul_discovery_token='${consul_discovery_token} > /etc/facter/facts.d/consul.txt
 echo 'current_version='${BUILD_NUMBER} > /etc/facter/facts.d/current_version.txt
 echo 'env='${env} > /etc/facter/facts.d/env.txt
 echo 'cloud_provider='${cloud_provider} > /etc/facter/facts.d/cloud_provider.txt
+echo 'apt_local_mirror='${apt_local_mirror} > /etc/facter/facts.d/apt_local_mirror.txt
+
 while true
 do
     # first install all packages to make the build as fast as possible
@@ -88,7 +114,7 @@ do
     # now perform base config
     (echo 'File<| title == "/etc/consul" |> { purge => false }'; echo 'include rjil::jiocloud' ) | puppet apply --detailed-exitcodes --debug
     ret_code_jio=\$?
-    if [[ \$ret_code_jio = 1 || \$ret_code_jio = 4 || \$ret_code_jio = 6 || \$ret_code_package = 1 || \$ret_code_package = 4 || \$ret_code_package = 6 ]]
+    if [ \$ret_code_jio != 2 || \$ret_code_package != 2 ]
     then
         echo "Puppet failed. Will retry in 5 seconds"
         sleep 5

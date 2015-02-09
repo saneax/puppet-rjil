@@ -1,0 +1,13 @@
+#Template file for sources.list
+##==============================
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty main restricted
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty-updates main restricted
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty universe
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty-updates universe
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty-backports main restricted universe multiverse
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty-security main restricted
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty-security universe
+deb [arch=amd64]  http://10.135.81.78/ubuntu trusty-security multiverse
+#
+#deb [arch=amd64] http://10.135.81.78/puppetlabs trusty main
+

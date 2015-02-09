@@ -2,7 +2,7 @@
 # Class rjil::default_manifest
 #
 class rjil::default_manifest {
-  if ($::settings::default_manifest == './manifests') {
+  if ($::settings::default_manifest == './manifests' or $::settings::default_manifest == '') {
     $val = '/etc/puppet/manifests/site.pp'
   } else {
     $val = $::settings::default_manifest
