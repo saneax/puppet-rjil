@@ -38,11 +38,24 @@ then
   dpkg -i internal.deb
 fi
 apt-get update
-apt-get install -y puppet software-properties-common puppet-jiocloud jiocloud-ssl-certificate
+
+#if vagrant box, we are not interested in installing puppet-jiocloud
+if [ "${cloud_provider}" == "vagrant-vbox"]
+then
+  apt-get install -y puppet software-properties-common jiocloud-ssl-certificate
+  env="${environment}:-virtual-vbox"
+  echo "${env}"
+else
+  apt-get install -y puppet software-properties-common puppet-jiocloud jiocloud-ssl-certificate
+fi
+
+#Build Python from source?
 if [ -n "${python_jiocloud_source_repo}" ]; then
   apt-get install -y python-pip python-jiocloud python-dev libffi-dev libssl-dev git
   pip install -e "${python_jiocloud_source_repo}@${python_jiocloud_source_branch}#egg=jiocloud"
 fi
+
+#Build rjil::jiocloud puppet configs from source
 if [ -n "${puppet_modules_source_repo}" ]; then
   apt-get install -y git
   git clone ${puppet_modules_source_repo} /tmp/rjil
@@ -75,11 +88,15 @@ if [ -n "${puppet_modules_source_repo}" ]; then
 else
   puppet apply -e "ini_setting { default_manifest: path => \"/etc/puppet/puppet.conf\", section => main, setting => default_manifest, value => \"/etc/puppet/manifests/site.pp\" }"
 fi
+
+#Populate Facter Variables
 sudo mkdir -p /etc/facter/facts.d
 echo 'consul_discovery_token='${consul_discovery_token} > /etc/facter/facts.d/consul.txt
 echo 'current_version='${BUILD_NUMBER} > /etc/facter/facts.d/current_version.txt
 echo 'env='${env} > /etc/facter/facts.d/env.txt
 echo 'cloud_provider='${cloud_provider} > /etc/facter/facts.d/cloud_provider.txt
+
+#Run Puppet endlessly until the puppet code run is successful
 while true
 do
   # first install all packages to make the build as fast as possible
