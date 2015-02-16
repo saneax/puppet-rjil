@@ -61,11 +61,8 @@ Vagrant.configure("2") do |config|
       config.vm.provision 'shell', :inline =>
       'cp /etc/puppet/hiera/hiera.yaml /etc/puppet'
 
-      #config.vm.provision 'shell', :inline =>
-      #"echo env=#{environment} > /etc/facter/facts.d/env.txt"
-
       config.vm.provision 'shell', :inline =>
-      "export consul_discovery_token=#{ENV['consul_discovery_token']};export layout=full;export map=#{map};export cloud_provider=vagrant-vbox;export environment=#{environment};/etc/puppet/manifests/build_scripts/make_userdata.sh;bash -x ./userdata.txt"
+      "export consul_discovery_token=#{ENV['consul_discovery_token']};export layout=#{layout};export map=#{map};export env=#{environment};/bin/bash /etc/puppet/manifests/build_scripts/make_userdata.sh;bash -x ./userdata.txt"
       net_prefix = ENV['NET_PREFIX'] || "192.168.100.0"
       config.vm.network "private_network", :type => :dhcp, :ip => net_prefix, :netmask => "255.255.255.0"
     end

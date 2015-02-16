@@ -40,11 +40,9 @@ fi
 apt-get update
 
 #if vagrant box, we are not interested in installing puppet-jiocloud
-if [ "${cloud_provider}" == "vagrant-vbox"]
+if [ "${env}" == "vagrant-vbox" ]
 then
   apt-get install -y puppet software-properties-common jiocloud-ssl-certificate
-  env="${environment}:-virtual-vbox"
-  echo "${env}"
 else
   apt-get install -y puppet software-properties-common puppet-jiocloud jiocloud-ssl-certificate
 fi
