@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
   environment = ENV['env'] || 'vagrant-vbox'
   layout = ENV['layout'] || 'full'
   map = ENV['map'] || environment
+  max_run_times = ENV['max_run_times'] || '5'
 
   config.vm.provider :virtualbox do |vb, override|
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
@@ -62,7 +63,7 @@ Vagrant.configure("2") do |config|
       'cp /etc/puppet/hiera/hiera.yaml /etc/puppet'
 
       config.vm.provision 'shell', :inline =>
-      "export consul_discovery_token=#{ENV['consul_discovery_token']};export layout=#{layout};export map=#{map};export env=#{environment};/bin/bash /etc/puppet/manifests/build_scripts/make_userdata.sh;bash -x ./userdata.txt"
+      "export max_run_times=#{max_run_times};export consul_discovery_token=#{ENV['consul_discovery_token']};export layout=#{layout};export map=#{map};export env=#{environment};/bin/bash /etc/puppet/manifests/build_scripts/make_userdata.sh;bash -x ./userdata.txt"
       net_prefix = ENV['NET_PREFIX'] || "192.168.100.0"
       config.vm.network "private_network", :type => :dhcp, :ip => net_prefix, :netmask => "255.255.255.0"
     end

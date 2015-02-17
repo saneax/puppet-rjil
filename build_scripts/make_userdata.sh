@@ -95,7 +95,10 @@ echo 'env='${env} > /etc/facter/facts.d/env.txt
 echo 'cloud_provider='${cloud_provider} > /etc/facter/facts.d/cloud_provider.txt
 
 #Run Puppet endlessly until the puppet code run is successful
-while true
+#Passing a new variable maximum nos of this loop to be executed, default endlessly
+max_run_times=${max_run_times:-9999}
+cnt=1
+while [ "\$cnt" -le "\$max_run_times" ]
 do
   # first install all packages to make the build as fast as possible
   puppet apply --detailed-exitcodes \`puppet config print default_manifest\` --tags package
@@ -105,11 +108,12 @@ do
   ret_code_jio=\$?
   if [[ \$ret_code_jio = 1 || \$ret_code_jio = 4 || \$ret_code_jio = 6 || \$ret_code_package = 1 || \$ret_code_package = 4 || \$ret_code_package = 6 ]]
   then
-    echo "Puppet failed. Will retry in 5 seconds"
+    echo "Puppet failed. Will retry [retries=${cnt}] in 5 seconds"
     sleep 5
   else
     break
   fi
+  cnt=\$((cnt+1))
 done
 date
 EOF
