@@ -191,3 +191,8 @@ node /^httpproxy\d+/ {
   include rjil::base
   include rjil::http_proxy
 }
+
+node /^jenkins\d+/ {
+  notice("We have the jiocloud_role as $jiocloud_role")
+  include ::rjil::jenkins
+}

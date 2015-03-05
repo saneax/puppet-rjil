@@ -1,0 +1,31 @@
+---
+ntp::servers:
+  - pool.ntp.org
+
+rjil::system::proxies:
+  "no":
+    url: "127.0.0.1,169.254.169.254,localhost,consul,jiocloud.com"
+
+jenkins::plugin_hash:
+  'git':
+    version: 2.2.7
+  'git-client':
+    version: 1.11.0
+  'ant':
+    version: 1.2
+  'credentials':
+    version: 1.8
+  'delivery-pipeline-plugin':
+    version: 0.8.6
+  'external-monitor-job':
+    version: 1.2
+
+rjil::jenkins::python_jenkins_pip_url: 'bzr+http://bazaar.launchpad.net/~soren/python-jenkins/add-crumb#egg=jenkins'
+rjil::jenkins::jenkins_job_builder_url: 'git+https://github.com/JioCloud/jenkins-job-builder#egg=jenkins_job_builderi'
+
+jenkins::port: 5500
+jenkins::install_java: true
+jenkins::cli: true
+jenkins::cli_tries: 5
+jenkins::cli_try_sleep: 20
+jenkins::user::email: jenkins@jiocloud.com

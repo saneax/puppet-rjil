@@ -33,9 +33,10 @@ class rjil::jiocloud::jenkins::master {
   }
 
   file { '/home/jenkins/.gitconfig':
-    owner => 'jenkins',
-    group => 'jenkins',
+    owner  => 'jenkins',
+    group  => 'jenkins',
     source => 'puppet:///modules/rjil/jenkins-gitconfig',
-    mode => '0644'
+    mode   => '0644',
+    ensure => present
   }
 }
