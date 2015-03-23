@@ -65,7 +65,8 @@ if [ -n "${puppet_modules_source_repo}" ]; then
   mkdir -p /etc/puppet/hiera.overrides
   sed  -i "s/  :datadir: \/etc\/puppet\/hiera\/data/  :datadir: \/etc\/puppet\/hiera.overrides\/data/" /tmp/rjil/hiera/hiera.yaml
   cp /tmp/rjil/hiera/hiera.yaml /etc/puppet
-  cp -Rvf /tmp/rjil/hiera/data /etc/puppet/hiera.overrides
+  cp /tmp/rjil/hiera/hiera.yaml /etc/
+  ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
   mkdir -p /etc/puppet/modules.overrides/rjil
   cp -Rvf /tmp/rjil/* /etc/puppet/modules.overrides/rjil/
   if [ -n "${module_git_cache}" ]
