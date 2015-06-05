@@ -166,7 +166,7 @@ mod 'jtopjian/apt_mirror',
 
 mod 'rtyler/jenkins',
   :git => "#{base_url}/jenkinsci/puppet-jenkins",
-  :ref => 'v1.2.0'
+  :ref => 'master'
 
 mod 'jtopjian/reprepro',
   :git => "#{base_url}/jtopjian/puppet-reprepro",
@@ -207,3 +207,8 @@ mod 'community/archive',
 mod 'pdxcat/collectd',
   :git => "#{base_url}/pdxcat/puppet-module-collectd",
   :ref => 'v3.2.0'
+
+mod 'stankevich/python',
+  :git => "#{base_url}/stankevich/puppet-python",
+  :ref => 'origin/master'
+
